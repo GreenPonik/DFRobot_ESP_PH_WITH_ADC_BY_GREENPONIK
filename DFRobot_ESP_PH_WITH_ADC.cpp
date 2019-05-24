@@ -1,7 +1,7 @@
 /*
- * file DFRobot_ESP_PH.cpp * @ https://github.com/GreenPonik/DFRobot_ESP_PH_BY_GREENPONIK
+ * file DFRobot_ESP_PH_WITH_ADC.cpp * @ https://github.com/GreenPonik/DFRobot_ESP_PH_WITH_ADC_BY_GREENPONIK
  *
- * Arduino library for Gravity: Analog pH Sensor / Meter Kit V2, SKU: SEN0161-V2
+ * Arduino library for Gravity: Analog pH Sensor / Meter Kit V2, SKU: SEN0161-V2 + ADC Adafruit ADS1115
  * 
  * Based on the @ https://github.com/DFRobot/DFRobot_PH
  * Copyright   [DFRobot](http://www.dfrobot.com), 2018
@@ -19,36 +19,31 @@
  */
 
 #include "Arduino.h"
-#include "DFRobot_ESP_PH.h"
+#include "DFRobot_ESP_PH_WITH_ADC.h"
 #include "EEPROM.h"
 
 #define PHVALUEADDR 0x00 //the start address of the pH calibration parameters stored in the EEPROM
 
-#define PH_8_VOLTAGE 1122
-#define PH_6_VOLTAGE 1478
-#define PH_5_VOLTAGE 1654
-#define PH_3_VOLTAGE 2010
-
-DFRobot_ESP_PH::DFRobot_ESP_PH()
+DFRobot_ESP_PH_WITH_ADC::DFRobot_ESP_PH_WITH_ADC()
 {
     this->_temperature = 25.0;
     this->_phValue = 7.0;
-    this->_acidVoltage = 2032.44;   //buffer solution 4.0 at 25C
-    this->_neutralVoltage = 1500.0; //buffer solution 7.0 at 25C
-    this->_voltage = 1500.0;
+    this->_acidVoltage = PH_4_AT_25;   //buffer solution 4.0 at 25C
+    this->_neutralVoltage = PH_7_AT_25; //buffer solution 7.0 at 25C
+    this->_voltage = PH_7_AT_25;
 }
 
-DFRobot_ESP_PH::~DFRobot_ESP_PH()
+DFRobot_ESP_PH_WITH_ADC::~DFRobot_ESP_PH_WITH_ADC()
 {
 }
 
-void DFRobot_ESP_PH::begin()
+void DFRobot_ESP_PH_WITH_ADC::begin()
 {
     //check if calibration values (neutral and acid) are stored in eeprom
     this->_neutralVoltage = EEPROM.readFloat(PHVALUEADDR); //load the neutral (pH = 7.0)voltage of the pH board from the EEPROM
     if (this->_neutralVoltage == float())
     {
-        this->_neutralVoltage = 1500.0; // new EEPROM, write typical voltage
+        this->_neutralVoltage = PH_7_AT_25; // new EEPROM, write typical voltage
         EEPROM.writeFloat(PHVALUEADDR, this->_neutralVoltage);
         EEPROM.commit();
     }
@@ -56,29 +51,29 @@ void DFRobot_ESP_PH::begin()
     this->_acidVoltage = EEPROM.readFloat(PHVALUEADDR + sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
     if (this->_acidVoltage == float())
     {
-        this->_acidVoltage = 2032.44; // new EEPROM, write typical voltage
+        this->_acidVoltage = PH_4_AT_25; // new EEPROM, write typical voltage
         EEPROM.writeFloat(PHVALUEADDR + sizeof(float), this->_acidVoltage);
         EEPROM.commit();
     }
 }
 
-float DFRobot_ESP_PH::readPH(float voltage, float temperature)
+float DFRobot_ESP_PH_WITH_ADC::readPH(float voltage, float temperature)
 {
     // Serial.print("_neutraVoltage:");
     // Serial.print(this->_neutralVoltage);
     // Serial.print(", _acidVoltage:");
     // Serial.print(this->_acidVoltage);
-    float slope = (7.0 - 4.0) / ((this->_neutralVoltage - 1500.0) / 3.0 - (this->_acidVoltage - 1500.0) / 3.0); // two point: (_neutralVoltage,7.0),(_acidVoltage,4.0)
-    float intercept = 7.0 - slope * (this->_neutralVoltage - 1500.0) / 3.0;
+    float slope = (7.0 - 4.0) / ((this->_neutralVoltage - PH_7_AT_25) / 3.0 - (this->_acidVoltage - PH_7_AT_25) / 3.0); // two point: (_neutralVoltage,7.0),(_acidVoltage,4.0)
+    float intercept = 7.0 - slope * (this->_neutralVoltage - PH_7_AT_25) / 3.0;
     // Serial.print(", slope:");
     // Serial.print(slope);
     // Serial.print(", intercept:");
     // Serial.println(intercept);
-    this->_phValue = slope * (voltage - 1500.0) / 3.0 + intercept; //y = k*x + b
+    this->_phValue = slope * (voltage - PH_7_AT_25) / 3.0 + intercept; //y = k*x + b
     return _phValue;
 }
 
-void DFRobot_ESP_PH::calibration(float voltage, float temperature, char *cmd)
+void DFRobot_ESP_PH_WITH_ADC::calibration(float voltage, float temperature, char *cmd)
 {
     this->_voltage = voltage;
     this->_temperature = temperature;
@@ -86,7 +81,7 @@ void DFRobot_ESP_PH::calibration(float voltage, float temperature, char *cmd)
     phCalibration(cmdParse(cmd)); // if received Serial CMD from the serial monitor, enter into the calibration mode
 }
 
-void DFRobot_ESP_PH::calibration(float voltage, float temperature)
+void DFRobot_ESP_PH_WITH_ADC::calibration(float voltage, float temperature)
 {
     this->_voltage = voltage;
     this->_temperature = temperature;
@@ -96,7 +91,7 @@ void DFRobot_ESP_PH::calibration(float voltage, float temperature)
     }
 }
 
-boolean DFRobot_ESP_PH::cmdSerialDataAvailable()
+boolean DFRobot_ESP_PH_WITH_ADC::cmdSerialDataAvailable()
 {
     char cmdReceivedChar;
     static unsigned long cmdReceivedTimeOut = millis();
@@ -124,7 +119,7 @@ boolean DFRobot_ESP_PH::cmdSerialDataAvailable()
     return false;
 }
 
-byte DFRobot_ESP_PH::cmdParse(const char *cmd)
+byte DFRobot_ESP_PH_WITH_ADC::cmdParse(const char *cmd)
 {
     byte modeIndex = 0;
     if (strstr(cmd, "ENTERPH") != NULL)
@@ -142,7 +137,7 @@ byte DFRobot_ESP_PH::cmdParse(const char *cmd)
     return modeIndex;
 }
 
-byte DFRobot_ESP_PH::cmdParse()
+byte DFRobot_ESP_PH_WITH_ADC::cmdParse()
 {
     byte modeIndex = 0;
     if (strstr(this->_cmdReceivedBuffer, "ENTERPH") != NULL)
@@ -160,7 +155,7 @@ byte DFRobot_ESP_PH::cmdParse()
     return modeIndex;
 }
 
-void DFRobot_ESP_PH::phCalibration(byte mode)
+void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
 {
     char *receivedBufferPtr;
     static boolean phCalibrationFinish = 0;
