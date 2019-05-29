@@ -23,6 +23,8 @@
 
 #include "Arduino.h"
 
+#define PHVALUEADDR 0 //the start address of the pH calibration parameters stored in the EEPROM
+
 //first you need to define the raw voltage for your circuit
 //the raw voltage for neutral pH 7.0 and acid pH 4.0 at 25 °c
 //for the actual circuit => ESP32 + ADC (ADS1115)
@@ -45,7 +47,7 @@ public:
     void calibration(float voltage, float temperature, char *cmd); //calibration by Serial CMD
     void calibration(float voltage, float temperature);
     float readPH(float voltage, float temperature); // voltage to pH value, with temperature compensation
-    void begin();                                   //initialization
+    void begin(int EepromStartAddress = PHVALUEADDR);                                   //initialization
 
 private:
     float _phValue;

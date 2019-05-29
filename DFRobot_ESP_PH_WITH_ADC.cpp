@@ -22,8 +22,6 @@
 #include "DFRobot_ESP_PH_WITH_ADC.h"
 #include "EEPROM.h"
 
-#define PHVALUEADDR 0x00 //the start address of the pH calibration parameters stored in the EEPROM
-
 DFRobot_ESP_PH_WITH_ADC::DFRobot_ESP_PH_WITH_ADC()
 {
     this->_temperature = 25.0;
@@ -37,22 +35,22 @@ DFRobot_ESP_PH_WITH_ADC::~DFRobot_ESP_PH_WITH_ADC()
 {
 }
 
-void DFRobot_ESP_PH_WITH_ADC::begin()
+void DFRobot_ESP_PH_WITH_ADC::begin(int EepromStartAddress)
 {
     //check if calibration values (neutral and acid) are stored in eeprom
-    this->_neutralVoltage = EEPROM.readFloat(PHVALUEADDR); //load the neutral (pH = 7.0)voltage of the pH board from the EEPROM
+    this->_neutralVoltage = EEPROM.readFloat(EepromStartAddress); //load the neutral (pH = 7.0)voltage of the pH board from the EEPROM
     if (this->_neutralVoltage == float())
     {
         this->_neutralVoltage = PH_7_AT_25; // new EEPROM, write typical voltage
-        EEPROM.writeFloat(PHVALUEADDR, this->_neutralVoltage);
+        EEPROM.writeFloat(EepromStartAddress, this->_neutralVoltage);
         EEPROM.commit();
     }
 
-    this->_acidVoltage = EEPROM.readFloat(PHVALUEADDR + sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
+    this->_acidVoltage = EEPROM.readFloat(EepromStartAddress + sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
     if (this->_acidVoltage == float())
     {
         this->_acidVoltage = PH_4_AT_25; // new EEPROM, write typical voltage
-        EEPROM.writeFloat(PHVALUEADDR + sizeof(float), this->_acidVoltage);
+        EEPROM.writeFloat(EepromStartAddress + sizeof(float), this->_acidVoltage);
         EEPROM.commit();
     }
 }
