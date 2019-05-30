@@ -44,10 +44,10 @@ class DFRobot_ESP_PH_WITH_ADC
 public:
     DFRobot_ESP_PH_WITH_ADC();
     ~DFRobot_ESP_PH_WITH_ADC();
-    void calibration(float voltage, float temperature, char *cmd); //calibration by Serial CMD
-    void calibration(float voltage, float temperature);
-    float readPH(float voltage, float temperature); // voltage to pH value, with temperature compensation
-    void begin(int EepromStartAddress = PHVALUEADDR);                                   //initialization
+    void calibration(float voltage, float temperature, char *cmd);      //calibration by Serial CMD
+    void calibration(float voltage, float temperature);                 
+    float readPH(float voltage, float temperature);                     // voltage to pH value, with temperature compensation
+    void begin(int EepromStartAddress = PHVALUEADDR);                   //initialization
 
 private:
     float _phValue;
@@ -56,12 +56,13 @@ private:
     float _voltage;
     float _temperature;
 
-    char _cmdReceivedBuffer[ReceivedBufferLength]; //store the Serial CMD
+    char _cmdReceivedBuffer[ReceivedBufferLength];                      //store the Serial CMD
     byte _cmdReceivedBufferIndex;
 
 private:
+    int _eepromStartAddress;
     boolean cmdSerialDataAvailable();
-    void phCalibration(byte mode); // calibration process, wirte key parameters to EEPROM
+    void phCalibration(byte mode);                                      // calibration process, wirte key parameters to EEPROM
     byte cmdParse(const char *cmd);
     byte cmdParse();
 };

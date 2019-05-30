@@ -53,6 +53,7 @@ void DFRobot_ESP_PH_WITH_ADC::begin(int EepromStartAddress)
         EEPROM.writeFloat(EepromStartAddress + sizeof(float), this->_acidVoltage);
         EEPROM.commit();
     }
+    this->_eepromStartAddress = EepromStartAddress;
 }
 
 float DFRobot_ESP_PH_WITH_ADC::readPH(float voltage, float temperature)
@@ -215,12 +216,12 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
             {
                 if ((this->_voltage > PH_8_VOLTAGE) && (this->_voltage < PH_5_VOLTAGE))
                 {
-                    EEPROM.writeFloat(PHVALUEADDR, this->_neutralVoltage);
+                    EEPROM.writeFloat(this->_eepromStartAddress, this->_neutralVoltage);
                     EEPROM.commit();
                 }
                 else if ((this->_voltage > PH_5_VOLTAGE) && (this->_voltage < PH_3_VOLTAGE))
                 {
-                    EEPROM.writeFloat(PHVALUEADDR + sizeof(float), this->_acidVoltage);
+                    EEPROM.writeFloat(this->_eepromStartAddress + sizeof(float), this->_acidVoltage);
                     EEPROM.commit();
                 }
                 Serial.print(F(">>>Calibration Successful"));
