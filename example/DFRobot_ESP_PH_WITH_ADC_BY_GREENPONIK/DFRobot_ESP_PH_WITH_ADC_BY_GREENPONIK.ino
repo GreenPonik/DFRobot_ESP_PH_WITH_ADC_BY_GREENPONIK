@@ -25,14 +25,16 @@
  * ##################################################
  * ##################################################
  * 
- * version  V1.0
- * date  2019-05
+ * version  V1.1
+ * date  2019-06
  */
 
+#include <Arduino.h>
 #include "DFRobot_ESP_PH_WITH_ADC.h"
 #include "OneWire.h"
 #include "DallasTemperature.h"
 #include "Adafruit_ADS1015.h"
+#include "EEPROM.h"
 
 #define ONE_WIRE_BUS 15
 OneWire oneWire(ONE_WIRE_BUS);
@@ -53,6 +55,7 @@ float readTemperature()
 void setup()
 {
 	Serial.begin(115200);
+	EEPROM.begin(32);//needed EEPROM.begin to store calibration k in eeprom
 	ph.begin();
 	sensors.begin();
 	ads.setGain(GAIN_ONE);
@@ -71,7 +74,7 @@ void loop()
 		 * index 2 for adc's pin A2
 		 * index 3 for adc's pin A3
 		*/
-		voltage = ads.readADC_SingleEnded(0) / 10; // read the voltage
+		voltage = ads.readADC_SingleEnded(1) / 10; // read the voltage
 		Serial.print("voltage:");
 		Serial.println(voltage, 4);
 

@@ -46,11 +46,11 @@ void DFRobot_ESP_PH_WITH_ADC::begin(int EepromStartAddress)
         EEPROM.commit();
     }
 
-    this->_acidVoltage = EEPROM.readFloat(EepromStartAddress + sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
+    this->_acidVoltage = EEPROM.readFloat(EepromStartAddress + (int)sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
     if (this->_acidVoltage == float())
     {
         this->_acidVoltage = PH_4_AT_25; // new EEPROM, write typical voltage
-        EEPROM.writeFloat(EepromStartAddress + sizeof(float), this->_acidVoltage);
+        EEPROM.writeFloat(EepromStartAddress + (int)sizeof(float), this->_acidVoltage);
         EEPROM.commit();
     }
     this->_eepromStartAddress = EepromStartAddress;
@@ -221,7 +221,7 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
                 }
                 else if ((this->_voltage > PH_5_VOLTAGE) && (this->_voltage < PH_3_VOLTAGE))
                 {
-                    EEPROM.writeFloat(this->_eepromStartAddress + sizeof(float), this->_acidVoltage);
+                    EEPROM.writeFloat(this->_eepromStartAddress + (int)sizeof(float), this->_acidVoltage);
                     EEPROM.commit();
                 }
                 Serial.print(F(">>>Calibration Successful"));
