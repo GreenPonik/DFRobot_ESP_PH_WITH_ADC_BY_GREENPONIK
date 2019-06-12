@@ -14,7 +14,7 @@
  * ##################################################
  * ##################################################
  * 
- * version  V1.2
+ * version  V1.2.1
  * date  2019-06
  */
 
@@ -26,7 +26,7 @@ DFRobot_ESP_PH_WITH_ADC::DFRobot_ESP_PH_WITH_ADC()
 {
     this->_temperature = 25.0;
     this->_phValue = 7.0;
-    this->_acidVoltage = PH_4_AT_25;   //buffer solution 4.0 at 25C
+    this->_acidVoltage = PH_4_AT_25;    //buffer solution 4.0 at 25C
     this->_neutralVoltage = PH_7_AT_25; //buffer solution 7.0 at 25C
     this->_voltage = PH_7_AT_25;
 }
@@ -180,8 +180,10 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
     case 2:
         if (enterCalibrationFlag)
         {
+            // buffer solution:7.0
+            // 7795 to 1250
             if ((this->_voltage > PH_VOLTAGE_NEUTRAL_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_NEUTRAL_HIGH_LIMIT))
-            { // buffer solution:7.0
+            {
                 Serial.println();
                 Serial.print(F(">>>Buffer Solution:7.0"));
                 this->_neutralVoltage = this->_voltage;
@@ -189,8 +191,10 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
                 Serial.println();
                 phCalibrationFinish = 1;
             }
+            //buffer solution:4.0
+            //1180 to 1700
             else if ((this->_voltage > PH_VOLTAGE_ACID_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_ACID_HIGH_LIMIT))
-            { //buffer solution:4.0
+            {
                 Serial.println();
                 Serial.print(F(">>>Buffer Solution:4.0"));
                 this->_acidVoltage = this->_voltage;
@@ -208,17 +212,21 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
         }
         break;
 
-    case 3://store calibration value in eeprom
+    case 3: //store calibration value in eeprom
         if (enterCalibrationFlag)
         {
             Serial.println();
             if (phCalibrationFinish)
             {
+                // buffer solution:7.0
+                // 7795 to 1250
                 if ((this->_voltage > PH_VOLTAGE_NEUTRAL_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_NEUTRAL_HIGH_LIMIT))
                 {
                     EEPROM.writeFloat(this->_eepromStartAddress, this->_neutralVoltage);
                     EEPROM.commit();
                 }
+                //buffer solution:4.0
+                //1180 to 1700
                 else if ((this->_voltage > PH_VOLTAGE_ACID_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_ACID_HIGH_LIMIT))
                 {
                     EEPROM.writeFloat(this->_eepromStartAddress + (int)sizeof(float), this->_acidVoltage);
