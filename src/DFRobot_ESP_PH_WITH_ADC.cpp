@@ -14,7 +14,7 @@
  * ##################################################
  * ##################################################
  * 
- * version  V1.1
+ * version  V1.2
  * date  2019-06
  */
 
@@ -37,23 +37,23 @@ DFRobot_ESP_PH_WITH_ADC::~DFRobot_ESP_PH_WITH_ADC()
 
 void DFRobot_ESP_PH_WITH_ADC::begin(int EepromStartAddress)
 {
+    this->_eepromStartAddress = EepromStartAddress;
     //check if calibration values (neutral and acid) are stored in eeprom
-    this->_neutralVoltage = EEPROM.readFloat(EepromStartAddress); //load the neutral (pH = 7.0)voltage of the pH board from the EEPROM
+    this->_neutralVoltage = EEPROM.readFloat(this->_eepromStartAddress); //load the neutral (pH = 7.0)voltage of the pH board from the EEPROM
     if (this->_neutralVoltage == float())
     {
         this->_neutralVoltage = PH_7_AT_25; // new EEPROM, write typical voltage
-        EEPROM.writeFloat(EepromStartAddress, this->_neutralVoltage);
+        EEPROM.writeFloat(this->_eepromStartAddress, this->_neutralVoltage);
         EEPROM.commit();
     }
 
-    this->_acidVoltage = EEPROM.readFloat(EepromStartAddress + (int)sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
+    this->_acidVoltage = EEPROM.readFloat(this->_eepromStartAddress + (int)sizeof(float)); //load the acid (pH = 4.0) voltage of the pH board from the EEPROM
     if (this->_acidVoltage == float())
     {
         this->_acidVoltage = PH_4_AT_25; // new EEPROM, write typical voltage
-        EEPROM.writeFloat(EepromStartAddress + (int)sizeof(float), this->_acidVoltage);
+        EEPROM.writeFloat(this->_eepromStartAddress + (int)sizeof(float), this->_acidVoltage);
         EEPROM.commit();
     }
-    this->_eepromStartAddress = EepromStartAddress;
 }
 
 float DFRobot_ESP_PH_WITH_ADC::readPH(float voltage, float temperature)
@@ -180,7 +180,7 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
     case 2:
         if (enterCalibrationFlag)
         {
-            if ((this->_voltage > PH_8_VOLTAGE) && (this->_voltage < PH_6_VOLTAGE))
+            if ((this->_voltage > PH_VOLTAGE_NEUTRAL_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_NEUTRAL_HIGH_LIMIT))
             { // buffer solution:7.0
                 Serial.println();
                 Serial.print(F(">>>Buffer Solution:7.0"));
@@ -189,7 +189,7 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
                 Serial.println();
                 phCalibrationFinish = 1;
             }
-            else if ((this->_voltage > PH_5_VOLTAGE) && (this->_voltage < PH_3_VOLTAGE))
+            else if ((this->_voltage > PH_VOLTAGE_ACID_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_ACID_HIGH_LIMIT))
             { //buffer solution:4.0
                 Serial.println();
                 Serial.print(F(">>>Buffer Solution:4.0"));
@@ -214,12 +214,12 @@ void DFRobot_ESP_PH_WITH_ADC::phCalibration(byte mode)
             Serial.println();
             if (phCalibrationFinish)
             {
-                if ((this->_voltage > PH_8_VOLTAGE) && (this->_voltage < PH_5_VOLTAGE))
+                if ((this->_voltage > PH_VOLTAGE_NEUTRAL_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_NEUTRAL_HIGH_LIMIT))
                 {
                     EEPROM.writeFloat(this->_eepromStartAddress, this->_neutralVoltage);
                     EEPROM.commit();
                 }
-                else if ((this->_voltage > PH_5_VOLTAGE) && (this->_voltage < PH_3_VOLTAGE))
+                else if ((this->_voltage > PH_VOLTAGE_ACID_LOW_LIMIT) && (this->_voltage < PH_VOLTAGE_ACID_HIGH_LIMIT))
                 {
                     EEPROM.writeFloat(this->_eepromStartAddress + (int)sizeof(float), this->_acidVoltage);
                     EEPROM.commit();

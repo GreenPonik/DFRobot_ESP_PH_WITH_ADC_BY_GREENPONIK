@@ -14,7 +14,7 @@
  * ##################################################
  * ##################################################
  * 
- * version  V1.1
+ * version  V1.2
  * date  2019-06
  */
 
@@ -28,14 +28,24 @@
 //first you need to define the raw voltage for your circuit
 //the raw voltage for neutral pH 7.0 and acid pH 4.0 at 25 °c
 //for the actual circuit => ESP32 + ADC (ADS1115)
-#define PH_4_AT_25 1521
-#define PH_7_AT_25 1134
 
 /*new ranges when read value behind adc*/
-#define PH_8_VOLTAGE 900
-#define PH_6_VOLTAGE 1250
-#define PH_5_VOLTAGE 1400
-#define PH_3_VOLTAGE 1700
+#define PH_VOLTAGE_ACID_OFFSET 200
+#define PH_VOLTAGE_NEUTRAL_OFFSET 200
+#define PH_8_VOLTAGE 995 //linear culculation
+#define PH_7_AT_25 1134 //laboratory measurement with isolation circuit, PH meter V2.0 and PH probe from DFRobot kit
+#define PH_6_VOLTAGE 1250 //linear culculation
+#define PH_5_VOLTAGE 1380 //linear culculation
+#define PH_4_AT_25 1521 //laboratory measurement with isolation circuit, PH meter V2.0 and PH probe from DFRobot kit
+#define PH_3_VOLTAGE 1700 //linear culculation
+
+#define PH_VOLTAGE_NEUTRAL_LOW_LIMIT PH_8_VOLTAGE - PH_VOLTAGE_NEUTRAL_OFFSET
+#define PH_VOLTAGE_NEUTRAL_HIGH_LIMIT PH_6_VOLTAGE + PH_VOLTAGE_NEUTRAL_OFFSET
+#define PH_VOLTAGE_ACID_LOW_LIMIT PH_5_VOLTAGE - PH_VOLTAGE_ACID_OFFSET
+#define PH_VOLTAGE_ACID_HIGH_LIMIT PH_3_VOLTAGE + PH_VOLTAGE_ACID_OFFSET
+
+//instead of 900 cause buffer 7.0 render 972 with outdor probe
+//instead of 1400 cause buffer 4.0 render 1320 with outdoor probe
 
 #define ReceivedBufferLength 10 //length of the Serial CMD buffer
 
