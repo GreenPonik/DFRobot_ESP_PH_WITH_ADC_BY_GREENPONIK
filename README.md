@@ -18,10 +18,12 @@ ESP Ph Reading and Calibration
 
 ```C++
 
+#include <Arduino.h>
 #include "DFRobot_ESP_PH_WITH_ADC.h"
 #include "OneWire.h"
 #include "DallasTemperature.h"
 #include "Adafruit_ADS1015.h"
+#include "EEPROM.h"
 
 #define ONE_WIRE_BUS 15
 OneWire oneWire(ONE_WIRE_BUS);
@@ -42,6 +44,7 @@ float readTemperature()
 void setup()
 {
 	Serial.begin(115200);
+	EEPROM.begin(32);//needed EEPROM.begin to store calibration k in eeprom
 	ph.begin();
 	sensors.begin();
 	ads.setGain(GAIN_ONE);
@@ -60,7 +63,7 @@ void loop()
 		 * index 2 for adc's pin A2
 		 * index 3 for adc's pin A3
 		*/
-		voltage = ads.readADC_SingleEnded(0) / 10; // read the voltage
+		voltage = ads.readADC_SingleEnded(1) / 10; // read the voltage
 		Serial.print("voltage:");
 		Serial.println(voltage, 4);
 
@@ -75,7 +78,6 @@ void loop()
 	}
 	ph.calibration(voltage, temperature); // calibration process by Serail CMD
 }
-
 ```
 
 ## Compatibility
@@ -83,6 +85,7 @@ void loop()
 MCU                | Work Well | Work Wrong | Untested  | Remarks
 ------------------ | :----------: | :----------: | :---------: | -----
 ESP32  |      √       |             |            | 
+ESP8266  |             |      √       |            | 
 
 ## Credits
 
