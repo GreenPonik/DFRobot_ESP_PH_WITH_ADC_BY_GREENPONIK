@@ -58,7 +58,7 @@ void DFRobot_ESP_PH_WITH_ADC::begin(int EepromStartAddress)
 
 float DFRobot_ESP_PH_WITH_ADC::readPH(float voltage, float temperature)
 {
-    // Serial.print("_neutraVoltage:");
+    // Serial.print("[readPH]... _neutraVoltage:");
     // Serial.print(this->_neutralVoltage);
     // Serial.print(", _acidVoltage:");
     // Serial.print(this->_acidVoltage);
@@ -69,7 +69,9 @@ float DFRobot_ESP_PH_WITH_ADC::readPH(float voltage, float temperature)
     // Serial.print(", intercept:");
     // Serial.println(intercept);
     this->_phValue = slope * (voltage - PH_7_AT_25) / 3.0 + intercept; //y = k*x + b
-    return _phValue;
+    Serial.print("[readPH]... phValue ");
+    Serial.println(this->_phValue);
+    return this->_phValue;
 }
 
 void DFRobot_ESP_PH_WITH_ADC::calibration(float voltage, float temperature, char *cmd)
