@@ -69,8 +69,9 @@ float DFRobot_ESP_PH_WITH_ADC::readPH(float voltage, float temperature)
     // Serial.print(", intercept:");
     // Serial.println(intercept);
     this->_phValue = slope * (voltage - PH_7_AT_25) / 3.0 + intercept; //y = k*x + b
-    Serial.print("[readPH]... phValue ");
-    Serial.println(this->_phValue);
+    Serial.print(">>>phValue ");
+    Serial.print(this->_phValue);
+    Serial.println("<<<");
     return this->_phValue;
 }
 
