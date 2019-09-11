@@ -1,5 +1,5 @@
 /*
- * file DFRobot_ESP_PH_WITH_ADC_BY_GREENPONIK.ino
+ * file read_ph.ino
  * @ https://github.com/GreenPonik/DFRobot_ESP_PH_WITH_ADC_BY_GREENPONIK
  *
  * IMPORTANT : to make it work, you will need the help of an additionnal ADC converter because the one on the ESP32 isn't accurate enough. Here we used an ADS1115 from Adafruit
@@ -20,7 +20,7 @@
  *
  * ##################################################
  * ##################################################
- * ########## Fork on github by GreenPonik ##########
+ * ######## Forked on github by GreenPonik ##########
  * ############# ONLY ESP COMPATIBLE ################
  * ##################################################
  * ##################################################
@@ -29,7 +29,6 @@
  * date  2019-06
  */
 
-#include <Arduino.h>
 #include "DFRobot_ESP_PH_WITH_ADC.h"
 #include "OneWire.h"
 #include "DallasTemperature.h"
