@@ -3,7 +3,7 @@
   "description": "Read PH with ESP32, ADC Adafruit ADS1115 and DFrobot SEN0161-V2 PH sensor kit",
   "keywords": "PH,reader,ESP32",
   "authors": {
-    "name": "Mickael Lehoux",
+    "name": "GreenPonik (Mickael Lehoux)",
     "maintainer": true
   },
   "repository": {
